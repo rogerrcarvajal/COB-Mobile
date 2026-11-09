@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<title>COD Mobile Pro Command Center — Universal Meta & REA Engine | Rogerr Carvajal</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-deep: #090d16;
+    --surface: rgba(30, 41, 59, 0.72);
+    --surface-hover: rgba(51, 65, 85, 0.85);
+    --border: rgba(148, 163, 184, 0.16);
+    --border-highlight: rgba(56, 189, 248, 0.45);
+    --primary: #3b82f6;
+    --secondary: #8b5cf6;
+    --accent: #38bdf8;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 12% 10%, rgba(59, 130, 246, 0.18), transparent 40%),
+                radial-gradient(circle at 88% 82%, rgba(139, 92, 246, 0.16), transparent 45%),
+                var(--bg-deep);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1320px; margin: 0 auto; }
+
+  /* Header */
+  .hero {
+    background: var(--surface);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+  }
+  .hero-left { display: flex; flex-direction: column; gap: 6px; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--accent);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+  }
+  .badge.purple { background: rgba(139, 92, 246, 0.18); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.35); }
+  .badge.emerald { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.35); }
+  .badge.rose { background: rgba(244, 63, 94, 0.18); color: #fda4af; border-color: rgba(244, 63, 94, 0.35); }
+  .hero h1 {
+    font-size: 23px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #f8fafc, #38bdf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p { font-size: 13px; color: var(--text-muted); }
+
+  /* Controls Bar */
+  .controls-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .control-card {
+    background: var(--surface);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .control-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 700;
+  }
+  select {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.9);
+    color: var(--text);
+    border: 1px solid var(--border-highlight);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+  .seg-group {
+    display: flex;
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid var(--border);
+  }
+  .seg-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .seg-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35);
+  }
+
+  /* Navigation Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .tab-btn {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab-btn:hover { border-color: var(--border-highlight); color: var(--text); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.25));
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2);
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.25s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Grid & Cards */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .card-title { font-size: 16px; font-weight: 800; color: var(--text); }
+  .card-sub { font-size: 12px; color: var(--text-muted); }
+
+  /* Filter Pills */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  .filter-pill {
+    background: rgba(15, 23, 42, 0.75);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Audit Checklist */
+  .audit-item {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--rose);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+  }
+  .audit-item.done {
+    border-left-color: var(--emerald);
+    opacity: 0.78;
+    background: rgba(16, 185, 129, 0.08);
+  }
+  .audit-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .audit-info p { font-size: 12px; color: var(--text-muted); }
+  .diff-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+  .old-val { color: #fda4af; text-decoration: line-through; background: rgba(244, 63, 94, 0.15); padding: 2px 7px; border-radius: 6px; }
+  .new-val { color: #6ee7b7; background: rgba(16, 185, 129, 0.18); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.35); }
+  .check-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .audit-item.done .check-btn {
+    background: var(--emerald);
+    color: #052e16;
+    border-color: var(--emerald);
+  }
+
+  /* Sensitivity Sliders / Meters */
+  .sens-row {
+    margin-bottom: 11px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+  .sens-row:last-child { border-bottom: none; margin-bottom: 0; }
+  .sens-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+  .sens-name { color: var(--text-muted); font-weight: 600; }
+  .sens-val { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .bar-bg {
+    height: 7px;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+  .bar-fill.purple { background: linear-gradient(90deg, var(--secondary), #c084fc); }
+
+  /* Gunsmith Cards */
+  .attachment-list { list-style: none; margin: 12px 0; }
+  .attachment-list li {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 11px;
+    margin-bottom: 7px;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .slot-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 7px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+  .copy-btn {
+    width: 100%;
+    background: rgba(59, 130, 246, 0.16);
+    color: var(--accent);
+    border: 1px solid var(--border-highlight);
+    padding: 9px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 6px;
+  }
+  .copy-btn:hover { background: var(--primary); color: white; }
+
+  /* Gallery Grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 14px;
+  }
+  .gallery-card {
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .gallery-card.critical { border-color: rgba(244, 63, 94, 0.55); }
+  .gallery-card img {
+    width: 100%;
+    height: 165px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    background: #090d16;
+  }
+  .gallery-body { padding: 12px; font-size: 12px; }
+  .gallery-body h4 { font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+  .gallery-body p { color: var(--text-muted); line-height: 1.4; }
+
+  /* Modal Lightbox */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 17, 0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal.open { display: flex; }
+  .modal-content {
+    max-width: 1080px;
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-highlight);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+  .modal-content img {
+    max-width: 100%;
+    max-height: 75vh;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px; }
+  tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+  .code-box {
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12px;
+    color: #93c5fd;
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .footer {
+    margin-top: 26px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 14px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO HEADER -->
+  <header class="hero">
+    <div class="hero-left">
+      <div class="badge-row">
+        <span class="badge">M2 iPad Pro 11" (4th Gen)</span>
+        <span class="badge purple">REA Engine Telemetry</span>
+        <span class="badge emerald">Universal Meta Gunsmith (18 Builds)</span>
+        <span class="badge rose">Player: 乂RC.elGon</span>
+      </div>
+      <h1>COD Mobile Pro Command Center & Universal Gunsmith</h1>
+      <p>Ingeniería Inversa (REA) • Top 10 Pro Benchmark (Ferg, Jokesta, Kith, Dregz, Parker, Br0ken, Sisco) • Auditoría 34 Capturas</p>
+    </div>
+    <div class="progress-wrap">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Auditoría Aplicada</div>
+        <div id="auditCounter" style="font-size:18px;font-weight:800;color:var(--emerald);">0 / 8 Críticos</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- GLOBAL CONTROLS -->
+  <section class="controls-bar">
+    <div class="control-card">
+      <label class="control-label">1. Dispositivo & Escala Universal</label>
+      <select id="deviceSelect" onchange="recalcDashboard()">
+        <option value="m2_11" selected>iPad Pro 11" (M1 / M2 / M4 / M5) — Base 1.00x (120Hz)</option>
+        <option value="m_13">iPad Pro 12.9" / 13" (M1 / M2 / M4 / M5) — Escala 0.88x</option>
+        <option value="mini_m6">iPad Mini 8 (Chip M6) / Mini 6-7 (8.3") — Escala 1.15x</option>
+        <option value="ipad_60">iPad Air / iPad Base (60Hz) — Escala 1.12x</option>
+        <option value="phone_120">iPhone Pro Max / Android Flagship (120Hz) — Escala 1.25x</option>
+        <option value="phone_60">Smartphone Estándar (60Hz) — Escala 1.35x</option>
+      </select>
+    </div>
+
+    <div class="control-card">
+      <label class="control-label">2. Modo de Combate Activo</label>
+      <div class="seg-group">
+        <button class="seg-btn active" id="btnMJ" onclick="setMode('MJ')">⚡ Multijugador (MJ Ranked)</button>
+        <button class="seg-btn" id="btnBR" onclick="setMode('BR')">🪂 Battle Royale (BR)</button>
+      </div>
+    </div>
+
+    <div class="control-card">
+      <label class="control-label">3. Giroscopio (Hardware IMU)</label>
+      <div class="seg-group">
+        <button class="seg-btn active" id="btnNoGyro" onclick="setGyro(false)">🖐️ Touch Claw (4-6 Dedos)</button>
+        <button class="seg-btn" id="btnGyro" onclick="setGyro(true)">🧭 Giroscopio Activo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="openTab('tab-gunsmith', this)">🔫 1. Armero Universal (Meta + Favoritas)</button>
+    <button class="tab-btn" onclick="openTab('tab-audit', this)">🚨 2. Auditoría Crítica (8 Correcciones)</button>
+    <button class="tab-btn" onclick="openTab('tab-sens', this)">🎯 3. Calculadora Universal Sensibilidad</button>
+    <button class="tab-btn" onclick="openTab('tab-rea', this)">🔬 4. Ingeniería Inversa (REA Engine)</button>
+    <button class="tab-btn" onclick="openTab('tab-maps', this)">🗺️ 5. Playbook de Mapas (MJ & BR)</button>
+    <button class="tab-btn" onclick="openTab('tab-gallery', this)">🖼️ 6. Galería 34 Capturas (En Vivo)</button>
+  </nav>
+
+  <!-- TAB 1: UNIVERSAL GUNSMITH -->
+  <section id="tab-gunsmith" class="tab-panel active">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Arsenal Completo Pro Lead — Para "Ramonear", Rushear y Dominar</div>
+          <div class="card-sub">Las clases de armas son 100% universales (funcionan en cualquier iPad, iPhone o Android). Filtra por rol o categoría:</div>
+        </div>
+        <span class="badge emerald" id="gunsmithModeTag">MODO: MJ RANKED</span>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-pill active" onclick="filterWeapons('ALL', this)">🔥 Todas las Armas (18)</button>
+        <button class="filter-pill" onclick="filterWeapons('FAV', this)">⭐ Tus 3 Favoritas (AK-47 / AK117 / HDR)</button>
+        <button class="filter-pill" onclick="filterWeapons('SMG', this)">⚡ Subfusiles para Ramonear (SMG)</button>
+        <button class="filter-pill" onclick="filterWeapons('AR', this)">🛡️ Rifles de Asalto Meta (AR)</button>
+        <button class="filter-pill" onclick="filterWeapons('SNIPER', this)">🎯 Snipers & Tirador</button>
+        <button class="filter-pill" onclick="filterWeapons('HEAVY', this)">💥 LMG & Escopetas One-Tap</button>
+      </div>
+    </div>
+
+    <div class="grid-3" id="weaponsGrid"></div>
+  </section>
+
+  <!-- TAB 2: CRITICAL AUDIT -->
+  <section id="tab-audit" class="tab-panel">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🚨 8 Frenos Detectados en tu Galería Actual</div>
+            <div class="card-sub">Basado en la inspección de IMG_0254.PNG a IMG_0287.PNG de tu iPad Pro M2</div>
+          </div>
+          <span class="badge rose">Acción Inmediata</span>
+        </div>
+        <div id="auditList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">⚙️ Configuración Óptima de Motor, Audio y Gráficos</div>
+            <div class="card-sub">Ajustes recomendados para iPad Serie M (M1, M2, M4, M5, M6 Mini 8)</div>
+          </div>
+          <span class="badge emerald">120 FPS Lock</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Parámetro</th><th>MJ (Multijugador)</th><th>BR (Battle Royale)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Calidad Gráfica</strong></td><td><span class="new-val">Media</span></td><td><span class="new-val">Baja / Media</span></td></tr>
+            <tr><td><strong>Cuadros por Segundo</strong></td><td><span class="new-val">Ultra (120 FPS)</span></td><td><span class="new-val">Ultra (120 FPS)</span></td></tr>
+            <tr><td><strong>FOV Cámara (1ra Persona)</strong></td><td><strong>80° – 85°</strong> (Actual: 75°)</td><td><strong>85° – 90°</strong></td></tr>
+            <tr><td><strong>FOV Arma (FOV)</strong></td><td><strong>+30 a +50</strong> (Actual: 0)</td><td><strong>+40 a +50</strong></td></tr>
+            <tr><td><strong>Vibración de Cámara ADS</strong></td><td><span class="new-val">0% (CRÍTICO)</span></td><td><span class="new-val">0% (CRÍTICO)</span></td></tr>
+            <tr><td><strong>Retroceso de Arma / Efecto</strong></td><td><strong>0% / 0%</strong></td><td><strong>0% / 0%</strong></td></tr>
+            <tr><td><strong>Pista de Deslizamiento</strong></td><td><span class="new-val">SÍ (Activar)</span></td><td><span class="new-val">SÍ (Activar)</span></td></tr>
+            <tr><td><strong>Perspectiva de Compañero</strong></td><td><span class="new-val">SÍ (Wallhack legal)</span></td><td><span class="new-val">SÍ</span></td></tr>
+            <tr><td><strong>Audio: Efectos / Música / IU</strong></td><td><strong>100 / 0 / 30</strong></td><td><strong>100 / 0 / 30</strong></td></tr>
+            <tr><td><strong>Dolby Atmos</strong></td><td><span class="new-val">SÍ (Espacial 3D)</span></td><td><span class="new-val">SÍ (Espacial 3D)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: SENSITIVITY CALCULATOR -->
+  <section id="tab-sens" class="tab-panel">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🎯 Regla de Oro Antes de Ajustar los Sliders</div>
+          <div class="card-sub">Corrige primero estos dos interruptores de tu captura IMG_0279.PNG:</div>
+        </div>
+        <span class="badge" id="sensDeviceBadge">Escala Activa: 1.00x</span>
+      </div>
+      <div class="grid-2">
+        <div style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.35);padding:12px;border-radius:10px;">
+          <strong style="color:#fda4af;">1. Vincular sensibilidad con resolución:</strong> Cambia de <span class="old-val">SÍ</span> a <span class="new-val">NO (APAGADO)</span>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Evita que el reescalador dinámico de Metal altere los píxeles por milímetro a mitad de un tiroteo.</p>
+        </div>
+        <div style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);padding:12px;border-radius:10px;">
+          <strong style="color:var(--accent);">2. Modo de Rotación:</strong> Cambia de <span class="old-val">Aceleración (190)</span> a <span class="new-val">Velocidad Fija</span> (o Aceleración 90–110)
+          <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">En pantalla de 11" tienes espacio físico de sobra para flicks 1:1 con memoria muscular exacta.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">👁️ Sensibilidad de Cámara</div>
+            <div class="card-sub">Deslizar sin disparar (Centering & Tracking)</div>
+          </div>
+        </div>
+        <div id="cameraSensContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🔥 Sensibilidad de Disparo</div>
+            <div class="card-sub">Control de retroceso (Corrige tus valores 300 y 85)</div>
+          </div>
+        </div>
+        <div id="firingSensContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🧭 Sensibilidad Giroscopio</div>
+            <div class="card-sub" id="gyroStatusSub">Opcional — Actívalo arriba si usas IMU</div>
+          </div>
+        </div>
+        <div id="gyroSensContainer"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: REA ENGINE TELEMETRY -->
+  <section id="tab-rea" class="tab-panel">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🔬 Deconstrucción del Motor (UnityFramework / IL2CPP)</div>
+            <div class="card-sub">Por qué el iPad Pro M2 a 120Hz dispara más rápido a nivel matemático</div>
+          </div>
+          <span class="badge purple">ARM64 Mach-O</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+          En <strong>Call of Duty: Mobile</strong>, el ciclo de disparo se procesa de forma discreta en cada tick de renderizado (<code style="color:var(--accent);">dt = 8.33ms</code> a 120 FPS frente a <code style="color:#fda4af;">dt = 16.67ms</code> a 60 FPS):
+        </p>
+        <div class="code-box">
+FramesPerShot = ceil( (60 / WeaponRPM) / FrameTime_dt )
+Effective_TTK = (ShotsToKill - 1) * FramesPerShot * FrameTime_dt
+
+• BP50 (952 RPM, 4-tap):
+  - @ 60 FPS  -> ceil(63.0ms / 16.67ms) = 4 frames (66.7ms/bala) -> TTK: 200.0ms
+  - @ 120 FPS -> ceil(63.0ms / 8.33ms)  = 8 frames (66.6ms/bala) -> Sin pérdida por redondeo
+
+• Fennec (1111 RPM, 4-tap):
+  - @ 60 FPS  -> Pierde 12.6ms por bala (Redondeo a 66.7ms)
+  - @ 120 FPS -> Pierde solo 4.3ms por bala (Redondeo a 58.3ms) -> ¡Ganas 25ms de TTK!
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📐 Cono BSA & Velocidad de Bala en BR</div>
+            <div class="card-sub">Cómo eliminar la dispersión aleatoria (Aim Cone)</div>
+          </div>
+          <span class="badge emerald">Gunsmith Math</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+          El motor separa el retroceso real del arma (<code style="color:#6ee7b7;">WeaponKickScale</code>) de la sacudida visual (<code style="color:#fda4af;">CameraShakeScale</code>). En tu captura <strong>IMG_0269.PNG</strong> tenías la sacudida al <strong>100%</strong>, desviando la retícula hasta ±1.8° sin necesidad.
+        </p>
+        <div class="code-box">
+// 1. Dispersión de Balas al Apuntar (BSA Cone):
+theta_BSA(t) = max(theta_min, theta_base * (1 - sum(Attach_BSA)))
+
+// 2. Anticipación (Lead Distance) en Battle Royale:
+Lead_Meters = Target_Speed * (Distance_m / Bullet_Velocity_mps)
+
+• HDR Estándar (720 m/s) a 200m: Lead = 6.5 * (200 / 720) = 1.80 metros
+• HDR Pro Build (1224 m/s) a 200m: Lead = 6.5 * (200 / 1224) = 1.06 metros (¡Hitscan!)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 5: TACTICAL MAP PLAYBOOK -->
+  <section id="tab-maps" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🗺️ Matriz Táctica de Mapas (MJ Ranked & Battle Royale)</div>
+          <div class="card-sub">Qué arma equipar en tus Loadouts 1 al 10 según el escenario de combate</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Escenario / Mapas</th>
+            <th>Tus Favoritas (AK-47 / AK117 / HDR)</th>
+            <th>Meta Absoluto (Pro Tier S+)</th>
+            <th>Táctica Clave iPad Pro M2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CQB / Ramonear Frenético</strong><br><span style="font-size:11px;color:var(--text-muted);">Nuketown, Shipment, Summit, Stand Off</span></td>
+            <td><strong>AK117 (MJ Aggro)</strong><br>Sin Culata + Supresor Integrado</td>
+            <td><strong>USS 9 / CX-9 / Fennec</strong><br>o <strong>BP50</strong></td>
+            <td>Usa <em>Slide-Cancel + Pre-Aim</em> en esquinas. Desactiva "Apunta y dispara con un toque" para hacer Hip-Fire en menos de 8m.</td>
+          </tr>
+          <tr>
+            <td><strong>Mapas 3 Carriles / Control</strong><br><span style="font-size:11px;color:var(--text-muted);">Firing Range, Raid, Slums, Takeoff, Hacienda</span></td>
+            <td><strong>AK-47 (Ranger 5.45)</strong><br>o <strong>AK117 Híbrida</strong></td>
+            <td><strong>DR-H (OTM 25) / Oden / HVK-30</strong></td>
+            <td>Mantén ángulos (Headglitches) en B-Flag o Hardpoint. Aprovecha los 120 FPS y la Perspectiva de Compañero para rotar 10s antes.</td>
+          </tr>
+          <tr>
+            <td><strong>Larga Distancia / Buscar y Destruir</strong><br><span style="font-size:11px;color:var(--text-muted);">Crossfire, Terminal, Crash, Tunisia, Coastal</span></td>
+            <td><strong>HDR (MJ Quick-Lane)</strong><br>1-Tap cuerpo entero hasta 42m</td>
+            <td><strong>LW3-Tundra / DL Q33 / SKS</strong></td>
+            <td>Con Sensibilidad Mira Francotirador en <strong>58</strong> (en vez de 80), tus flicks se detienen en seco sobre el pecho/cabeza.</td>
+          </tr>
+          <tr>
+            <td><strong>Battle Royale — Isolated & Blackout</strong><br><span style="font-size:11px;color:var(--text-muted);">Zonas abiertas, colinas, rotaciones de vehículo</span></td>
+            <td><strong>Combo: AK-47 (Ranger) + HDR (1,224 m/s)</strong><br>o <strong>AK117 (Marksman) + HDR</strong></td>
+            <td><strong>AK117 / Oden + HDR / HS0405</strong></td>
+            <td>Mods Dorados obligatorios: <strong>Precisión Vertical + Alcance Largo + Cargador Ampliado</strong>. Con el HDR apunta directo a la cabeza hasta 200m.</td>
+          </tr>
+          <tr>
+            <td><strong>Battle Royale — Alcatraz / Krai</strong><br><span style="font-size:11px;color:var(--text-muted);">Combate cercano, tejados y pasillos</span></td>
+            <td><strong>AK117 + Escopeta / SMG</strong></td>
+            <td><strong>AK117 + HS0405 / Fennec / CX-9</strong></td>
+            <td>Sube el FOV en 1ra persona a <strong>85°-90°</strong>. Usa la pista de deslizamiento activa para romper cámaras en escaleras.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 6: LIVE 34 SCREENSHOT GALLERY -->
+  <section id="tab-gallery" class="tab-panel">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🖼️ Visor en Vivo: Tus 34 Capturas Originales (`COD Mobile - Gallery`)</div>
+          <div class="card-sub">Haz clic en cualquier imagen de tu iPad Pro M2 para ampliarla y ver el diagnóstico técnico exacto:</div>
+        </div>
+        <div class="filter-bar" style="margin-bottom:0;">
+          <button class="filter-pill active" onclick="filterGallery('ALL', this)">Todas (34)</button>
+          <button class="filter-pill" onclick="filterGallery('CRITICAL', this)">🚨 Con Frenos Críticos</button>
+          <button class="filter-pill" onclick="filterGallery('OK', this)">✅ Óptimas / Referencia</button>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- MODAL LIGHTBOX -->
+  <div class="modal" id="imgModal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <img id="modalImg" src="" alt="Captura COD Mobile">
+      <h4 id="modalTitle" style="margin-bottom:4px;"></h4>
+      <p id="modalDesc" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;"></p>
+      <button class="check-btn" onclick="closeModal()">Cerrar Vista Previa</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Desarrollado por <strong>Rogerr Carvajal (@rogerrcarvajal)</strong> • Proyecto <code>COB-Mobile</code> sincronizado con GitHub & XAMPP Local
+  </footer>
+
+</div>
+
+<script>
+  let currentMode = 'MJ';
+  let useGyro = false;
+  let currentWeaponFilter = 'ALL';
+
+  const deviceMultipliers = {
+    m2_11:   { scale: 1.00, name: 'iPad Pro 11" (Serie M)' },
+    m_13:    { scale: 0.88, name: 'iPad Pro 12.9" / 13" (Serie M)' },
+    mini_m6: { scale: 1.15, name: 'iPad Mini 8 (M6) / Mini 6-7' },
+    ipad_60: { scale: 1.12, name: 'iPad Air / Base (60Hz)' },
+    phone_120: { scale: 1.25, name: 'iPhone Pro Max / Android 120Hz' },
+    phone_60:  { scale: 1.35, name: 'Smartphone Estándar 60Hz' }
+  };
+
+  const baseSens = {
+    MJ: {
+      camera: [
+        { name: 'Sensibilidad Estándar (3ra Persona)', val: 92, old: 88 },
+        { name: 'Sensibilidad de Giro Vertical', val: 92, old: 85 },
+        { name: 'Sensibilidad de Apuntado (ADS)', val: 112, old: 110 },
+        { name: 'Mira Táctica', val: 118, old: 125 },
+        { name: 'Mira de Francotirador (Sniper)', val: 58, old: 80 },
+        { name: 'Mira Táctica X3', val: 78, old: 60 },
+        { name: 'Mira Táctica X4 (¡Estaba en 295!)', val: 70, old: 295 },
+        { name: 'Mira Táctica X6 / X8', val: 50, old: 50 }
+      ],
+      firing: [
+        { name: 'Sensibilidad Estándar (Cadera)', val: 105, old: 80 },
+        { name: 'Sensibilidad de Dirección (¡Estaba en 300!)', val: 128, old: 300 },
+        { name: 'Sensibilidad de Giro Vertical (¡Estaba en 85!)', val: 122, old: 85 },
+        { name: 'Mira Punto Rojo / Holográfica', val: 128, old: 135 },
+        { name: 'Mira Táctica', val: 115, old: 125 },
+        { name: 'Mira de Francotirador', val: 58, old: 80 },
+        { name: 'Mira Táctica X3 / X4', val: 75, old: 55 }
+      ],
+      gyro: [
+        { name: 'Estándar (Sin apuntar)', val: 95 },
+        { name: 'Sensibilidad de Apuntado (ADS)', val: 75 },
+        { name: 'Mira Punto Rojo / Táctica', val: 68 },
+        { name: 'Mira de Francotirador', val: 32 }
+      ]
+    },
+    BR: {
+      camera: [
+        { name: 'Sensibilidad Estándar (TPP / FPP)', val: 100, old: 88 },
+        { name: 'Sensibilidad de Giro Vertical', val: 100, old: 85 },
+        { name: 'Sensibilidad de Apuntado (ADS)', val: 118, old: 110 },
+        { name: 'Mira Táctica', val: 120, old: 125 },
+        { name: 'Mira de Francotirador (HDR)', val: 62, old: 80 },
+        { name: 'Mira Táctica X3', val: 82, old: 60 },
+        { name: 'Mira Táctica X4 (¡Estaba en 295!)', val: 75, old: 295 },
+        { name: 'Mira Táctica X6 / X8', val: 54, old: 50 }
+      ],
+      firing: [
+        { name: 'Sensibilidad Estándar (Cadera)', val: 112, old: 80 },
+        { name: 'Sensibilidad de Dirección (¡Estaba en 300!)', val: 135, old: 300 },
+        { name: 'Sensibilidad de Giro Vertical (¡Estaba en 85!)', val: 125, old: 85 },
+        { name: 'Mira Punto Rojo / Holográfica', val: 135, old: 135 },
+        { name: 'Mira Táctica', val: 118, old: 125 },
+        { name: 'Mira de Francotirador (HDR)', val: 60, old: 80 },
+        { name: 'Mira Táctica X3 / X4', val: 80, old: 55 }
+      ],
+      gyro: [
+        { name: 'Estándar (TPP / FPP)', val: 110 },
+        { name: 'Sensibilidad de Apuntado (ADS)', val: 88 },
+        { name: 'Mira Punto Rojo / Táctica', val: 80 },
+        { name: 'Mira de Francotirador (HDR)', val: 38 }
+      ]
+    }
+  };
+
+  const weaponsCatalog = [
+    {
+      name: 'AK-47',
+      cat: 'AR',
+      fav: true,
+      tier: 'FAVORITA • META BR & MJ',
+      role: 'Láser de Media/Larga Distancia y Rey de Isolated',
+      MJ: {
+        subtitle: 'MJ Ranked (Híbrida / Calibre 5.45 o Estándar)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón ligero y extendido de MIP (o Ranger OWC)'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Láser / Munición', 'Láser táctico OWC (o Calibre 5.45 x 39mm para CQB)'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Peso Ligero + Despiadado (Toughness) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Zero-Recoil Beam (0–120 metros)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico (+25% alcance)'],
+          ['Cañón', 'Tirador OWC (Ranger) — Máximo control vertical y BSA'],
+          ['Mira / Culata', 'Mira de punto rojo clásica (o Culata estable RTC)'],
+          ['Acople', 'Empuñadura frontal de Ranger'],
+          ['Munición', 'Cargador ampliado A de 40 / 50 balas']
+        ],
+        perks: 'Mods BR: Precisión Vertical (Dorado) + Alcance Largo + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'AK117',
+      cat: 'AR',
+      fav: true,
+      tier: 'FAVORITA • #1 ABSOLUTO BR',
+      role: 'Rifle de Alta Cadencia (770 RPM) y Aim-Assist Magnético',
+      MJ: {
+        subtitle: 'MJ Aggro-Flex (Para Ramonear y Romper Puntos)',
+        attachments: [
+          ['Cañón', 'Cañón ligero con supresor integrado YKM'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Láser', 'Láser táctico OWC'],
+          ['Munición', 'Cargador ampliado de 40 / 48 balas'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Ágil / Skulker + Arrollador (Gung-Ho) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Meta Absoluto (Rastreo Magnético en Vehículos)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Tirador OWC (Marksman) — Máximo alcance y estabilidad'],
+          ['Culata / Mira', 'Culata estable RTC (o Mira de Punto Rojo)'],
+          ['Acople', 'Empuñadura frontal de Ranger'],
+          ['Munición', 'Cargador ampliado de 48 balas']
+        ],
+        perks: 'Mods BR: Alcance Largo (Dorado) + Retroceso Lateral + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'HDR',
+      cat: 'SNIPER',
+      fav: true,
+      tier: 'FAVORITA • REY SNIPER BR',
+      role: 'Francotirador Pesado One-Shot Headshot Infinito',
+      MJ: {
+        subtitle: 'MJ Buscar y Destruir (1-Tap Cuerpo Entero hasta 42m)',
+        attachments: [
+          ['Cañón', 'Cañón ligero de 66.0 cm (26.0") — Reduce ADS'],
+          ['Culata', 'Culata de acechador FTAC'],
+          ['Láser', 'Láser táctico OWC'],
+          ['Munición', 'Cargador de 7 balas'],
+          ['Ventaja', 'Prestidigitación (Sleight of Hand) o Balas Blindadas']
+        ],
+        perks: 'Ágil + Dureza (Toughness) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Hitscan 1,224 m/s (1-Tap a la Cabeza contra 300 HP)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador ligero (o Monolítico)'],
+          ['Cañón', 'HDR Pro de 68.3 cm (26.9") — +42% Velocidad de Bala'],
+          ['Culata', 'Culata de campeón FTAC (-60% estremecimiento)'],
+          ['Láser / Ventaja', 'Láser táctico OWC (o Balas blindadas FMJ)'],
+          ['Munición', 'Cargador de 9 balas']
+        ],
+        perks: 'Mods BR: Francotirador Experto (Dorado) + Alcance Largo + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'USS 9 (Uzi)',
+      cat: 'SMG',
+      fav: false,
+      tier: 'META S+ • RAMONEO PURO',
+      role: '3-Tap Letal con Movilidad de Subfusil y Alcance de AR',
+      MJ: {
+        subtitle: 'MJ Ranked Slayer (#1 SMG Competitivo)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón de fábrica Carbine Pro de 41.9 cm'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Munición', 'Cargador de 32 balas calibre .41 AE'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Peso Ligero + Estimulante / Gung-Ho + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR CQB & Alcatraz Dominator',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón Carbine Pro de 41.9 cm'],
+          ['Láser', 'Láser de 5mW de MIP (Hip-Fire)'],
+          ['Munición', 'Cargador de tambor de 50 balas'],
+          ['Agarre trasero', 'Adhesivo granulado']
+        ],
+        perks: 'Mods BR: Disparo desde la Cadera + Cargador Ampliado + Deslizamiento Rápido'
+      }
+    },
+    {
+      name: 'CX-9',
+      cat: 'SMG',
+      fav: false,
+      tier: 'META S+ • 1,034 RPM',
+      role: 'Trituradora de Corta Distancia para Romper Hardpoints',
+      MJ: {
+        subtitle: 'MJ Ultra-Rush (Nuketown / Summit / Shipment)',
+        attachments: [
+          ['Cañón', 'CX-38S (Silenciador integrado + Alcance + Velocidad bala)'],
+          ['Culata', 'CX-FR (Máxima velocidad de movimiento al apuntar)'],
+          ['Munición', 'Cargador de tambor de 50 balas'],
+          ['Agarre trasero', 'Empuñadura CX-9 con cinta / granulada'],
+          ['Ventaja', 'Prestidigitación (Recarga instantánea)']
+        ],
+        perks: 'Peso Ligero + Arrollador (Gung-Ho) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Hip-Fire Shredder (Cero Tiempo de Apuntado)',
+        attachments: [
+          ['Cañón', 'CX-38E (Alcance y control de retroceso)'],
+          ['Láser', 'Láser de 5mW de MIP'],
+          ['Acople', 'Empuñadura frontal de mercenario'],
+          ['Munición', 'Tambor de 50 balas'],
+          ['Ventaja', 'Prestidigitación']
+        ],
+        perks: 'Mods BR: Precisión desde la Cadera (Dorado) + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'Fennec',
+      cat: 'SMG',
+      fav: false,
+      tier: 'META S • 1,111 RPM',
+      role: 'El TTK Más Rápido a Corto Alcance (Aprovecha los 120Hz)',
+      MJ: {
+        subtitle: 'MJ Entry Fragger (Control Vertical con Giro Vertical 122)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón ligero y extendido de MIP'],
+          ['Culata', 'Culata estable RTC (o Sin culata para ultra-rush)'],
+          ['Acople', 'Empuñadura frontal de operador'],
+          ['Munición', 'Cargador ampliado A de 40 balas']
+        ],
+        perks: 'Peso Ligero + Buitre / Gung-Ho + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Hip-Fire Láser (Derriba en 0.45s a quemarropa)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón ligero y extendido de MIP'],
+          ['Láser', 'Láser de 5mW de MIP'],
+          ['Acople', 'Empuñadura frontal de mercenario'],
+          ['Munición', 'Cargador ampliado A de 40 balas']
+        ],
+        perks: 'Mods BR: Disparo desde la Cadera (Dorado) + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'Switchblade X9',
+      cat: 'SMG',
+      fav: false,
+      tier: 'META S • SLIDE-CANCEL',
+      role: 'Movilidad Extrema para Jugadores de 4 a 6 Dedos en iPad',
+      MJ: {
+        subtitle: 'MJ Pro Slayer Build',
+        attachments: [
+          ['Boca de cañón', 'Silenciador táctico (o Monolítico)'],
+          ['Cañón', 'Cañón ligero y extendido de MIP'],
+          ['Culata', 'Culata ligera YKM (Strafe Speed letal)'],
+          ['Munición', 'Cargador ampliado A'],
+          ['Agarre trasero', 'Empuñadura granulada']
+        ],
+        perks: 'Skulker + Quick Fix (Parche Rápido) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Alcatraz & CQB Agile Build',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón ligero y extendido de MIP'],
+          ['Láser', 'Láser de 5mW de MIP'],
+          ['Munición', 'Cargador ampliado A'],
+          ['Agarre trasero', 'Empuñadura granulada']
+        ],
+        perks: 'Mods BR: Deslizamiento Rápido + Precisión Cadera + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'QQ9',
+      cat: 'SMG',
+      fav: false,
+      tier: 'META S • CLÁSICO PRO',
+      role: 'Versatilidad Total con Munición de 10mm o Tambor de 45',
+      MJ: {
+        subtitle: 'MJ Aggressive Rush (45 Balas)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón largo táctico de reconocimiento RTC'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Munición', 'Cargador ampliado de 45 balas (o 30 balas de 10mm)'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Peso Ligero + Quick Fix + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Close-Range Finisher',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón largo táctico RTC'],
+          ['Láser', 'Láser de 5mW de MIP'],
+          ['Acople', 'Empuñadura frontal de mercenario'],
+          ['Munición', 'Cargador ampliado de 45 balas']
+        ],
+        perks: 'Mods BR: Disparo Cadera + Cargador Ampliado + Alcance Largo'
+      }
+    },
+    {
+      name: 'BP50',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S+ • 952 RPM LÁSER',
+      role: 'Cadencia de Subfusil con Precisión de Rifle de Asalto',
+      MJ: {
+        subtitle: 'MJ Ranked Dominator (60 Balas)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador Maxim (Control y sigilo)'],
+          ['Cañón', 'Leroy de 438mm (Rápido y letal)'],
+          ['Culata', 'Sin culata (o Culata Leroy personalizada)'],
+          ['Munición', 'Tambores de calibre 7.62 de 60 balas'],
+          ['Agarre trasero', 'Empuñadura con punteado (Stippled)']
+        ],
+        perks: 'Peso Ligero + Dureza + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Mid-Range Shredder',
+        attachments: [
+          ['Boca de cañón', 'Silenciador Maxim'],
+          ['Cañón', 'Cañón Chariot de 520mm (Máximo alcance y velocidad bala)'],
+          ['Culata', 'Culata Forbearance'],
+          ['Munición', 'Tambores de 60 balas'],
+          ['Agarre trasero', 'Empuñadura con cinta / granulada']
+        ],
+        perks: 'Mods BR: Precisión Vertical + Alcance Largo + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'Oden',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S+ • 2-TAP KING',
+      role: 'Mata de 2 Balas en MJ (~145ms TTK) y Destroza Blindajes en BR',
+      MJ: {
+        subtitle: 'MJ 2-Tap Anchor (Requiere Precisión de iPad)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador coloso (Colossus Suppressor — +40% Alcance)'],
+          ['Cañón', 'Cañón corto ligero de MIP'],
+          ['Culata', 'Culata ligera YKM'],
+          ['Acople', 'Empuñadura frontal de operador'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Skulker + Dureza (Toughness) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Heavy Hitter (Mejor TTK de Media Distancia en BR)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador coloso (Colossus Suppressor)'],
+          ['Cañón', 'Tirador OWC (Marksman)'],
+          ['Mira / Culata', 'Mira de Punto Rojo (o Culata estable RTC si tienes mítica)'],
+          ['Acople', 'Empuñadura frontal de Ranger'],
+          ['Munición', 'Cargador ampliado B']
+        ],
+        perks: 'Mods BR: Alcance Largo (Dorado) + Precisión Vertical + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'DR-H',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S+ • OTM 3-TAP',
+      role: 'El Rey de Torneos Competitivos con Cargador OTM de 25 Balas',
+      MJ: {
+        subtitle: 'MJ Tournament Standard',
+        attachments: [
+          ['Boca de cañón', 'Silenciador táctico (o Monolítico)'],
+          ['Cañón', 'Tirador OWC (Ranger)'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Munición', 'Cargador OTM de 25 balas (¡OBLIGATORIO!)'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Peso Ligero + Dureza + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Mid-Range Precision',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Tirador OWC (Ranger)'],
+          ['Culata', 'Culata estable RTC'],
+          ['Munición', 'Cargador OTM de 30 balas'],
+          ['Agarre trasero', 'Adhesivo granulado']
+        ],
+        perks: 'Mods BR: Cargador Ampliado (Dorado) + Alcance Largo'
+      }
+    },
+    {
+      name: 'HVK-30',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S+ • GRAN CALIBRE',
+      role: '2-Tap a la Cabeza y 3-Tap Consistente en Todo el Mapa',
+      MJ: {
+        subtitle: 'MJ Pro Ranked Build',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Cañón ligero de MIP'],
+          ['Culata', 'Culata de combate YKM'],
+          ['Munición', 'Munición de gran calibre (Large Caliber — ¡OBLIGATORIO!)'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Peso Ligero + Buitre / Dureza + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR High-Damage Duels',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Tirador OWC'],
+          ['Culata', 'Culata estable'],
+          ['Munición', 'Gran calibre'],
+          ['Agarre trasero', 'Adhesivo granulado']
+        ],
+        perks: 'Mods BR: Cargador Ampliado (Dorado) + Recarga Rápida'
+      }
+    },
+    {
+      name: 'Type 19',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S • FLEX AR',
+      role: 'Cero Retroceso Visual y Transición Instantánea de ADS',
+      MJ: {
+        subtitle: 'MJ All-Rounder Flex',
+        attachments: [
+          ['Boca de cañón', 'Silenciador preciso del norte (North Industry)'],
+          ['Cañón', 'Cañón pesado de precisión (Accurate/Support)'],
+          ['Culata', 'Culata ágil'],
+          ['Munición', 'Tambor de recarga rápida'],
+          ['Agarre trasero', 'Empuñadura de polímero']
+        ],
+        perks: 'Peso Ligero + Dureza + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Laser Beam',
+        attachments: [
+          ['Boca de cañón', 'Silenciador del norte'],
+          ['Cañón', 'Cañón pesado de largo alcance'],
+          ['Acople', 'Bípode pesado / Empuñadura de precisión'],
+          ['Munición', 'Tambor de alta capacidad'],
+          ['Agarre trasero', 'Empuñadura de polímero']
+        ],
+        perks: 'Mods BR: Alcance Largo + Precisión Vertical + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'Grau 5.56 / M13',
+      cat: 'AR',
+      fav: false,
+      tier: 'META S • EASY LASER',
+      role: 'Las Miras de Hierro Más Limpias (Cero Rebote de Arma)',
+      MJ: {
+        subtitle: 'Grau 5.56 MJ Arcángel Build',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Tempus Arcángel de 67.1 cm (Mejor mira de hierro del juego)'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Munición', 'Cargador de 50 balas'],
+          ['Agarre trasero', 'Empuñadura Cronen Sniper Elite (BSA)']
+        ],
+        perks: 'Skulker + Dureza + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'M13 BR Silenced Beam (880 RPM)',
+        attachments: [
+          ['Cañón', 'Cañón pesado largo RTC'],
+          ['Culata', 'Culata de asalto RTC'],
+          ['Láser / Mira', 'Mira de punto rojo clásica'],
+          ['Munición', 'Cargador de doble hilera de .300 de 40 balas (o 60 balas)'],
+          ['Agarre trasero', 'Adhesivo granulado']
+        ],
+        perks: 'Mods BR: Cargador Ampliado + Alcance Largo + Precisión Vertical'
+      }
+    },
+    {
+      name: 'LW3-Tundra',
+      cat: 'SNIPER',
+      fav: false,
+      tier: 'META S+ • #1 QUICK-SCOPE MJ',
+      role: 'El Francotirador Más Rápido y Letal de Multijugador Ranked',
+      MJ: {
+        subtitle: 'MJ Pro Quick-Scope & Respawn Sniper',
+        attachments: [
+          ['Boca de cañón', 'Silenciador táctico'],
+          ['Cañón', 'Hammer Forged de 71.6 cm (Cadencia y velocidad)'],
+          ['Culata', 'Peine de bandolera (Bandolier) o Culata Raider'],
+          ['Munición', 'Cargador rápido de 7 balas Salvo'],
+          ['Agarre trasero', 'Envoltura de serpiente (Serpent Wrap — Máximo ADS)']
+        ],
+        perks: 'Ágil + Dureza (Toughness) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Fast Aggro Sniper',
+        attachments: [
+          ['Boca de cañón', 'Silenciador envuelto (Wrapped Suppressor)'],
+          ['Cañón', 'Cañón de reconocimiento Tiger Team de 71.6 cm'],
+          ['Culata', 'Almohadilla táctica'],
+          ['Munición', 'Cargador de 7 balas'],
+          ['Agarre trasero', 'Envoltura de aire (Airborne Elastic Wrap)']
+        ],
+        perks: 'Mods BR: Francotirador Experto + Alcance Largo'
+      }
+    },
+    {
+      name: 'SKS / Type 63',
+      cat: 'SNIPER',
+      fav: false,
+      tier: 'META S+ • 4-FINGER CLAW KING',
+      role: 'Semiautomática 2-Tap (1-Tap Headshot) Exclusiva para Jugadores de iPad',
+      MJ: {
+        subtitle: 'MJ 2-Tap Marksman (Domina en 4 Dedos)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador táctico'],
+          ['Cañón', 'Cañón extendido ligero de MIP'],
+          ['Culata', 'Culata de acechador MFT'],
+          ['Acople', 'Empuñadura frontal táctica A'],
+          ['Agarre trasero', 'Adhesivo de empuñadura granulado']
+        ],
+        perks: 'Skulker + Dureza (Toughness — OBLIGATORIO) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'BR Semi-Auto Spam (Con Mod Francotirador Dorado = Automática)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador monolítico'],
+          ['Cañón', 'Tirador OWC'],
+          ['Culata', 'Culata estable RTC'],
+          ['Munición', 'Cargador ampliado de 30 balas'],
+          ['Agarre trasero', 'Adhesivo granulado']
+        ],
+        perks: 'Mods BR: Francotirador Experto (Dorado = Disparo continuo) + Alcance'
+      }
+    },
+    {
+      name: 'MG42',
+      cat: 'HEAVY',
+      fav: false,
+      tier: 'META S+ • LMG SUPRESIÓN',
+      role: 'Cero Retroceso y Cadencia Extrema para Bloquear Carriles y Vehículos',
+      MJ: {
+        subtitle: 'MJ Hardpoint / Domination Wall-Bang',
+        attachments: [
+          ['Boca de cañón', 'Silenciador Recoil Booster / Maxim'],
+          ['Cañón', 'Krausnick de 355mm Rápido'],
+          ['Culata', 'Culata Krausnick S91P'],
+          ['Munición', 'Tambores de 6.5mm Arisaka de 125 balas'],
+          ['Ventaja', 'Balas blindadas (FMJ) para atravesar paredes']
+        ],
+        perks: 'Chaleco antibombas (Flak Jacket) + Dureza + Línea dura'
+      },
+      BR: {
+        subtitle: 'BR Squad Wiper (Destruye Helicópteros y Escuadras)',
+        attachments: [
+          ['Boca de cañón', 'Silenciador Maxim'],
+          ['Cañón', 'Cañón pesado de 682mm'],
+          ['Culata', 'Culata pesada VDD'],
+          ['Acople', 'Empuñadura frontal Carver'],
+          ['Munición', 'Tambor de 125 / 250 balas']
+        ],
+        perks: 'Mods BR: Precisión Vertical + Alcance Largo + Cargador Ampliado'
+      }
+    },
+    {
+      name: 'HS0405 / KRM-262',
+      cat: 'HEAVY',
+      fav: false,
+      tier: 'META S+ • ONE-TAP ESCOPETA',
+      role: 'Derriba de 1 Solo Disparo (300 HP en BR) y Rey del Slide-Shot en MJ',
+      MJ: {
+        subtitle: 'KRM-262 MJ Ranked Slide-One-Tap',
+        attachments: [
+          ['Boca de cañón', 'Estrangulador (Marauder Suppressor — Cierra perdigones)'],
+          ['Cañón', 'Cañón extendido +2 RTC'],
+          ['Culata', 'Sin culata (No Stock)'],
+          ['Láser', 'Láser de 5mW de MIP (Precisión desde la cadera)'],
+          ['Ventaja', 'Aceleración (Speed Up Kill — +30% velocidad al matar)']
+        ],
+        perks: 'Peso Ligero + Arrollador (Gung-Ho) + Silencio Mortal'
+      },
+      BR: {
+        subtitle: 'HS0405 BR 1-Tap 300 HP (El Terror de Isolated & Alcatraz)',
+        attachments: [
+          ['Boca de cañón', 'Estrangulador (Choke / Marauder)'],
+          ['Cañón', 'Cañón extendido RTC'],
+          ['Culata', 'Sin culata'],
+          ['Láser', 'Láser de 5mW de MIP'],
+          ['Munición / Agarre', 'Tubos ampliados (o Adhesivo punteado)']
+        ],
+        perks: 'Mods BR: Alcance Largo (Dorado = +Daño a cabeza) + Disparo Cadera + Deslizamiento'
+      }
+    }
+  ];
+
+  const auditItemsData = [
+    {
+      id: 'aud1',
+      img: 'IMG_0269.PNG',
+      title: '1. Escala de Vibración de la Cámara al Apuntar (ADS)',
+      desc: 'Provoca rebote visual artificial en tu mira aunque controles el retroceso real.',
+      oldVal: '100',
+      newVal: '0 (En los 6 sliders de Básicos)'
+    },
+    {
+      id: 'aud2',
+      img: 'IMG_0281.PNG',
+      title: '2. Sensibilidad de Disparo — Dirección',
+      desc: 'Al estar en 300 (tope máximo), el primer toque de disparo hace saltar la mira fuera del enemigo.',
+      oldVal: '300',
+      newVal: '128 (MJ) / 135 (BR)'
+    },
+    {
+      id: 'aud3',
+      img: 'IMG_0282.PNG',
+      title: '3. Sensibilidad de Disparo — Giro Vertical',
+      desc: 'En 85 te obliga a arrastrar demasiado el pulgar hacia abajo para controlar AK-47 o Fennec.',
+      oldVal: '85',
+      newVal: '122 (MJ) / 125 (BR)'
+    },
+    {
+      id: 'aud4',
+      img: 'IMG_0279.PNG',
+      title: '4. Vincular Sensibilidad con Resolución + Modo Rotación',
+      desc: 'El escalado dinámico de Metal cambia tu sensibilidad cuando hay humo o termitas.',
+      oldVal: 'Vincular: SÍ / Aceleración 190',
+      newVal: 'Vincular: NO / Velocidad Fija'
+    },
+    {
+      id: 'aud5',
+      img: 'IMG_0280.PNG',
+      title: '5. Sensibilidad de Cámara — Mira Táctica X4',
+      desc: 'Un valor desproporcionado que hace incontrolables las miras X4 en BR.',
+      oldVal: '295',
+      newVal: '70 (MJ) / 75 (BR)'
+    },
+    {
+      id: 'aud6',
+      img: 'IMG_0270.PNG',
+      title: '6. Perspectiva de Compañero (Teammate Perspective)',
+      desc: 'Ver la silueta de tus aliados a través de los muros te avisa al instante dónde murió un compañero.',
+      oldVal: 'NO',
+      newVal: 'SÍ (Activado)'
+    },
+    {
+      id: 'aud7',
+      img: 'IMG_0258.PNG',
+      title: '7. Pista de Deslizamiento & Disparo con 1 Toque',
+      desc: 'Elimina el retardo del Slide-Cancel y te devuelve el disparo desde la cadera manual.',
+      oldVal: 'Pista: NO / 1-Toque: SÍ',
+      newVal: 'Pista: SÍ / Personalizado'
+    },
+    {
+      id: 'aud8',
+      img: 'IMG_0276.PNG',
+      title: '8. Mezcla de Audio Competitiva + Dolby Atmos',
+      desc: 'Aísla los pasos enemigos a 35m y silencia la música de tensión al final de las rondas.',
+      oldVal: 'Efectos 60 / Música 35 / Atmos NO',
+      newVal: 'Efectos 100 / Música 0 / Atmos SÍ'
+    }
+  ];
+
+  const galleryMetadata = [
+    { file: 'IMG_0254.PNG', section: 'Perfil de Jugador', status: 'OK', note: 'ID: 乂RC.elGon — Base de referencia del proyecto.' },
+    { file: 'IMG_0255.PNG', section: 'Controles (MJ)', status: 'CRITICAL', note: 'Cambiar de "Apunta y dispara con un toque" a Personalizado (Avanzado).' },
+    { file: 'IMG_0256.PNG', section: 'Controles (BR)', status: 'CRITICAL', note: 'Activar disparo manual desde la cadera para escopetas y SMGs en BR.' },
+    { file: 'IMG_0257.PNG', section: 'Controles (Zombis)', status: 'OK', note: 'Modo Zombis configurado.' },
+    { file: 'IMG_0258.PNG', section: 'Básico — MJ (Parte 1)', status: 'CRITICAL', note: 'Activar "Pista de deslizamiento: SÍ" para Slide-Cancel instantáneo.' },
+    { file: 'IMG_0259.PNG', section: 'Básico — MJ (Parte 2)', status: 'OK', note: 'Sincronizar FOV para zoom de mira: ACTIVADO (Correcto).' },
+    { file: 'IMG_0260.PNG', section: 'Básico — MJ (FOV)', status: 'CRITICAL', note: 'Subir FOV Cámara de 75 a 82–85 y FOV Arma de 0 a +40.' },
+    { file: 'IMG_0261.PNG', section: 'Básico — MJ (Marcadores)', status: 'OK', note: 'Opacidad de objetivos e interfaz limpia.' },
+    { file: 'IMG_0262.PNG', section: 'Básico — BR (Parte 1)', status: 'CRITICAL', note: 'Activar Pista de deslizamiento en BR.' },
+    { file: 'IMG_0263.PNG', section: 'Básico — BR (Parte 2)', status: 'OK', note: 'Opciones de paracaídas y escalada.' },
+    { file: 'IMG_0264.PNG', section: 'Básico — BR (FOV)', status: 'CRITICAL', note: 'Subir FOV 1ra Persona a 85–90 en BR.' },
+    { file: 'IMG_0265.PNG', section: 'Básico — BR (Minimapa)', status: 'OK', note: 'Minimapa y opacidad en BR.' },
+    { file: 'IMG_0266.PNG', section: 'Básico — Zombis (1)', status: 'OK', note: 'Ajustes básicos de Zombis.' },
+    { file: 'IMG_0267.PNG', section: 'Básico — Zombis (2)', status: 'OK', note: 'Ajustes secundarios de Zombis.' },
+    { file: 'IMG_0268.PNG', section: 'Gráficos y FPS (M2)', status: 'CRITICAL', note: 'Cuadros por segundo en ULTRA (120Hz) perfecto; bajar Gráficos a Media para evitar throttling.' },
+    { file: 'IMG_0269.PNG', section: 'Gráficos — Vibración Cámara', status: 'CRITICAL', note: '¡CRÍTICO! Escala de vibración de cámara está en 100. Bajar los 6 sliders a 0.' },
+    { file: 'IMG_0270.PNG', section: 'Gráficos — Perspectiva', status: 'CRITICAL', note: 'Activar "Perspectiva de compañero: SÍ" y "Mostrar FPS: SÍ".' },
+    { file: 'IMG_0271.PNG', section: 'Sonido y Gráficos (BR)', status: 'OK', note: 'Estilo visual Dinámico en BR.' },
+    { file: 'IMG_0272.PNG', section: 'Efectos de Impacto', status: 'OK', note: 'Color y estilo de impacto táctico.' },
+    { file: 'IMG_0273.PNG', section: 'Ajustes de Vehículos BR', status: 'OK', note: 'Esquema de conducción en Battle Royale.' },
+    { file: 'IMG_0274.PNG', section: 'Botín Automático BR (1)', status: 'OK', note: 'Límites de placas y granadas.' },
+    { file: 'IMG_0275.PNG', section: 'Botín Automático BR (2)', status: 'OK', note: 'Prioridad de mods y miras en BR.' },
+    { file: 'IMG_0276.PNG', section: 'Audio — Volúmenes', status: 'CRITICAL', note: 'Subir Efectos de 60 a 100 y bajar Música de 35 a 0.' },
+    { file: 'IMG_0277.PNG', section: 'Audio — Dolby Atmos', status: 'CRITICAL', note: 'Activar "Dolby Atmos: SÍ" para posicionamiento 3D en los 4 altavoces del iPad Pro.' },
+    { file: 'IMG_0278.PNG', section: 'Sensibilidad Global', status: 'OK', note: 'Selector de preajustes de sensibilidad.' },
+    { file: 'IMG_0279.PNG', section: 'Sensibilidad — Rotación', status: 'CRITICAL', note: '¡CRÍTICO! Apagar "Vincular sensibilidad con resolución" y pasar a Velocidad Fija.' },
+    { file: 'IMG_0280.PNG', section: 'Sensibilidad — Cámara', status: 'CRITICAL', note: '¡CRÍTICO! Mira Táctica X4 está en 295. Bajar a 70 (MJ) / 75 (BR).' },
+    { file: 'IMG_0281.PNG', section: 'Sensibilidad — Disparo (1)', status: 'CRITICAL', note: '¡CRÍTICO! Sensibilidad de Dirección está en 300. Bajar a 128 (MJ) / 135 (BR).' },
+    { file: 'IMG_0282.PNG', section: 'Sensibilidad — Disparo (2)', status: 'CRITICAL', note: '¡CRÍTICO! Giro Vertical de Disparo está en 85. Subir a 122 (MJ) / 125 (BR).' },
+    { file: 'IMG_0283.PNG', section: 'Sensibilidad — Giroscopio (1)', status: 'OK', note: 'Valores base de Giroscopio.' },
+    { file: 'IMG_0284.PNG', section: 'Sensibilidad — Giroscopio (2)', status: 'OK', note: 'Valores de Giroscopio al disparar.' },
+    { file: 'IMG_0285.PNG', section: 'Rueda de Comunicación', status: 'OK', note: 'Marcadores rápidos de escuadra.' },
+    { file: 'IMG_0286.PNG', section: 'Privacidad y Legal', status: 'OK', note: 'Modo streamer y privacidad.' },
+    { file: 'IMG_0287.PNG', section: 'Cuenta y Diagnóstico Red', status: 'OK', note: 'Precarga de shaders recomendada tras actualizar gráficos.' }
+  ];
+
+  function openTab(tabId, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btnMJ').classList.toggle('active', mode === 'MJ');
+    document.getElementById('btnBR').classList.toggle('active', mode === 'BR');
+    document.getElementById('gunsmithModeTag').textContent = mode === 'MJ' ? 'MODO: MJ RANKED' : 'MODO: BATTLE ROYALE';
+    recalcDashboard();
+  }
+
+  function setGyro(val) {
+    useGyro = val;
+    document.getElementById('btnNoGyro').classList.toggle('active', !val);
+    document.getElementById('btnGyro').classList.toggle('active', val);
+    recalcDashboard();
+  }
+
+  function filterWeapons(cat, btn) {
+    currentWeaponFilter = cat;
+    document.querySelectorAll('#tab-gunsmith .filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    renderWeapons();
+  }
+
+  function renderWeapons() {
+    const grid = document.getElementById('weaponsGrid');
+    const filtered = weaponsCatalog.filter(w => {
+      if (currentWeaponFilter === 'ALL') return true;
+      if (currentWeaponFilter === 'FAV') return w.fav;
+      return w.cat === currentWeaponFilter;
+    });
+
+    grid.innerHTML = filtered.map((w, idx) => {
+      const cfg = w[currentMode];
+      const borderStyle = w.fav ? 'border-color: rgba(56, 189, 248, 0.55); box-shadow: 0 6px 24px rgba(56, 189, 248, 0.12);' : '';
+      const badgeClass = w.fav ? '' : (w.cat === 'SMG' ? 'emerald' : (w.cat === 'SNIPER' ? 'purple' : 'rose'));
+      const copyPayload = `${w.name} (${currentMode} - ${cfg.subtitle}): ` + cfg.attachments.map(a => `${a[0]}: ${a[1]}`).join(' | ') + ` || ${cfg.perks}`;
+
+      return `
+        <div class="card" style="${borderStyle}">
+          <div class="card-header">
+            <div>
+              <div class="card-title">${w.fav ? '⭐ ' : ''}${w.name}</div>
+              <div class="card-sub">${w.role}</div>
+            </div>
+            <span class="badge ${badgeClass}">${w.tier}</span>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;">${cfg.subtitle}</div>
+          <ul class="attachment-list">
+            ${cfg.attachments.map(a => `
+              <li>
+                <span class="slot-tag">${a[0]}</span>
+                <span style="text-align:right;font-weight:600;">${a[1]}</span>
+              </li>
+            `).join('')}
+          </ul>
+          <div style="font-size:11.5px;color:var(--text-muted);background:rgba(15,23,42,0.55);padding:8px 10px;border-radius:8px;margin-bottom:8px;">
+            <strong style="color:#6ee7b7;">Complementos:</strong> ${cfg.perks}
+          </div>
+          <button class="copy-btn" onclick="copyText('${copyPayload.replace(/'/g, "\\'")}', this)">📋 Copiar Clase ${currentMode} al Portapapeles</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function copyText(txt, btn) {
+    navigator.clipboard.writeText(txt);
+    const prev = btn.textContent;
+    btn.textContent = '✅ ¡Clase Copiada!';
+    btn.style.background = 'var(--emerald)';
+    btn.style.color = '#052e16';
+    setTimeout(() => {
+      btn.textContent = prev;
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 1600);
+  }
+
+  function renderAudit() {
+    const list = document.getElementById('auditList');
+    list.innerHTML = auditItemsData.map(item => {
+      const done = localStorage.getItem(item.id) === '1';
+      return `
+        <div class="audit-item ${done ? 'done' : ''}" id="row-${item.id}">
+          <div class="audit-info">
+            <h4>${item.title} <span style="font-size:11px;color:var(--accent);">(${item.img})</span></h4>
+            <p>${item.desc}</p>
+            <div class="diff-pill">
+              <span class="old-val">${item.oldVal}</span>
+              <span>➔</span>
+              <span class="new-val">${item.newVal}</span>
+            </div>
+          </div>
+          <button class="check-btn" onclick="toggleAudit('${item.id}')">${done ? '✓ Aplicado' : 'Marcar Listo'}</button>
+        </div>
+      `;
+    }).join('');
+    updateAuditCounter();
+  }
+
+  function toggleAudit(id) {
+    const cur = localStorage.getItem(id) === '1';
+    localStorage.setItem(id, cur ? '0' : '1');
+    renderAudit();
+  }
+
+  function updateAuditCounter() {
+    const count = auditItemsData.filter(i => localStorage.getItem(i.id) === '1').length;
+    document.getElementById('auditCounter').textContent = `${count} / ${auditItemsData.length} Críticos`;
+  }
+
+  function renderSens() {
+    const devKey = document.getElementById('deviceSelect').value;
+    const mult = deviceMultipliers[devKey].scale;
+    const gyroMult = useGyro ? 0.92 : 1.00;
+    const totalMult = mult * gyroMult;
+
+    document.getElementById('sensDeviceBadge').textContent = `${deviceMultipliers[devKey].name} (${totalMult.toFixed(2)}x)`;
+
+    const data = baseSens[currentMode];
+
+    document.getElementById('cameraSensContainer').innerHTML = data.camera.map(s => {
+      const val = Math.min(300, Math.round(s.val * totalMult));
+      const pct = Math.min(100, Math.round((val / 200) * 100));
+      return `
+        <div class="sens-row">
+          <div class="sens-top">
+            <span class="sens-name">${s.name}</span>
+            <span class="sens-val">${val} <span style="font-size:11px;color:var(--text-muted);font-weight:500;">(Antes: ${s.old})</span></span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('firingSensContainer').innerHTML = data.firing.map(s => {
+      const val = Math.min(300, Math.round(s.val * totalMult));
+      const pct = Math.min(100, Math.round((val / 200) * 100));
+      return `
+        <div class="sens-row">
+          <div class="sens-top">
+            <span class="sens-name">${s.name}</span>
+            <span class="sens-val">${val} <span style="font-size:11px;color:var(--text-muted);font-weight:500;">(Antes: ${s.old})</span></span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill purple" style="width:${pct}%"></div></div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('gyroStatusSub').textContent = useGyro
+      ? '🧭 Giroscopio ACTIVO (Touch reducido 8% para precisión híbrida)'
+      : '🖐️ Modo Touch Puro (Activa Giroscopio arriba si deseas valores IMU)';
+
+    document.getElementById('gyroSensContainer').innerHTML = data.gyro.map(s => {
+      const val = useGyro ? Math.round(s.val * mult) : 0;
+      const pct = Math.min(100, Math.round((val / 160) * 100));
+      return `
+        <div class="sens-row" style="opacity:${useGyro ? '1' : '0.45'}">
+          <div class="sens-top">
+            <span class="sens-name">${s.name}</span>
+            <span class="sens-val">${useGyro ? val : 'OFF (0)'}</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function filterGallery(filter, btn) {
+    document.querySelectorAll('#tab-gallery .filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    renderGallery(filter);
+  }
+
+  function renderGallery(filter = 'ALL') {
+    const grid = document.getElementById('galleryGrid');
+    const items = galleryMetadata.filter(g => filter === 'ALL' || g.status === filter);
+    grid.innerHTML = items.map(g => {
+      const isCrit = g.status === 'CRITICAL';
+      const imgPath = `COD Mobile - Gallery/${g.file}`;
+      return `
+        <div class="gallery-card ${isCrit ? 'critical' : ''}">
+          <img src="${imgPath}" alt="${g.file}" loading="lazy" onclick="openModal('${imgPath}', '${g.file} — ${g.section}', '${g.note.replace(/'/g, "\\'")}')">
+          <div class="gallery-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <h4>${g.file}</h4>
+              <span class="badge ${isCrit ? 'rose' : 'emerald'}">${isCrit ? 'Corregir' : 'Óptimo'}</span>
+            </div>
+            <div style="font-weight:700;color:var(--accent);margin-bottom:4px;">${g.section}</div>
+            <p>${g.note}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function openModal(src, title, desc) {
+    document.getElementById('modalImg').src = src;
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDesc').textContent = desc;
+    document.getElementById('imgModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+  }
+
+  function recalcDashboard() {
+    renderWeapons();
+    renderSens();
+  }
+
+  // Init
+  renderAudit();
+  recalcDashboard();
+  renderGallery('ALL');
+</script>
+</body>
+</html>
